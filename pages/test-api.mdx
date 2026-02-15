@@ -1,0 +1,67 @@
+import { useState } from 'react'
+
+# API Connection Test
+
+This page tests the connection between Vercel (Frontend) and Railway (Backend).
+
+export const ApiTester = () => {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  // 環境変数からAPIのURLを取得（末尾のスラッシュを削除）
+  const apiUrl = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '')
+
+  const checkConnection = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      // RailwayのFastAPIルート("/")を叩く
+      const res = await fetch(`${apiUrl}/`)
+      if (!res.ok) throw new Error(`HTTP Error: ${res.status}`)
+      const json = await res.json()
+      setData(json)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div style={{ padding: '20px', border: '1px solid #ccc', borderRadius: '8px', marginTop: '20px' }}>
+      <h3>🚀 Backend Connection Check</h3>
+      <p><strong>Target API:</strong> {apiUrl || 'Not Set (Check Environment Variables)'}</p>
+      
+      <button 
+        onClick={checkConnection}
+        disabled={loading}
+        style={{
+          padding: '10px 20px',
+          backgroundColor: '#0070f3',
+          color: 'white',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: loading ? 'not-allowed' : 'pointer'
+        }}
+      >
+        {loading ? 'Connecting...' : 'Test Connection'}
+      </button>
+
+      {error && (
+        <div style={{ marginTop: '15px', color: 'red', backgroundColor: '#fff0f0', padding: '10px' }}>
+          ❌ Error: {error}
+        </div>
+      )}
+
+      {data && (
+        <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f0fff4', border: '1px solid #48bb78' }}>
+          ✅ <strong>Success! Response from Railway:</strong>
+          <pre style={{ marginTop: '10px' }}>{JSON.stringify(data, null, 2)}</pre>
+        </div>
+      )}
+    </div>
+  )
+}
+
+<ApiTester />
