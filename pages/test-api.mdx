@@ -17,7 +17,7 @@ export const ApiTester = () => {
     setError(null)
     try {
       // RailwayのFastAPIルート("/")を叩く
-      const res = await fetch(`${apiUrl}/`)
+      const res = await fetch('/api/bridge')
       if (!res.ok) throw new Error(`HTTP Error: ${res.status}`)
       const json = await res.json()
       setData(json)
